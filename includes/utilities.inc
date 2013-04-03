@@ -187,7 +187,7 @@ function islandora_internet_archive_bookreader_get_solr_search_url($object_id, $
   $url = url($base_url, array(
            'query' => array(
              'q' => implode(':', array($ocr_field, lesser_escape($term))),
-             'fq' => implode(':', array($ocr_filter_field, lesser_escape($object_id))),
+             'fq' => implode(':', array($ocr_filter_field, lesser_escape('info:fedora/' . $object_id))),
              'version' => '2.2',
              'start' => '0',
              'rows' => $num_rows,

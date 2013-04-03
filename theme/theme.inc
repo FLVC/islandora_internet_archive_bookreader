@@ -34,6 +34,12 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
     );
   }
 
+  $toc_entries = array();
+  if (isset($object['TOC']))
+  {
+    $toc_entries = drupal_json_decode($object['TOC']->content);
+  }
+
   global $base_url;
   drupal_add_js(array(
       'islandoraInternetArchiveBookReader' => array(
@@ -49,6 +55,7 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
         'pageProgression' => $variables['page_progression'],
         'pages' => $pages,
         'pageCount' => count($pages),
+        'tocEntries' => $toc_entries,
       ),
     ), 'setting');
   drupal_add_css("$library_path/BookReader/BookReader.css");
