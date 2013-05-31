@@ -41,7 +41,7 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
     $toc_entries = drupal_json_decode($object['TOC']->content);
 
     for ($i=0; $i < count($toc_entries['table_of_contents']); $i++) {
-        if ($toc_entries['table_of_contents'][$i]['type'] == 'page') {
+        if (isset($toc_entries['table_of_contents'][$i]['type'])&&($toc_entries['table_of_contents'][$i]['type'] == 'page')) {
             // save page number in array
             $sequence_number = intval($toc_entries['table_of_contents'][$i]['pagenum']);
             if ($sequence_number > 0) {
