@@ -16,7 +16,7 @@
           $('#textSrch').hide();
           $('#btnSrch').hide();
         }
-        if (bookReader.settings.tocEntries.length > 0) {
+        if (bookReader.settings.tocFound == 'true') {
             bookReader.updateTOC(bookReader.settings.tocEntries['table_of_contents']);
         }
       });

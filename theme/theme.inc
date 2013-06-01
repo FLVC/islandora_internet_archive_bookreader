@@ -34,10 +34,13 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
     );
   }
 
+  $toc_found = 'false';
   $toc_entries = array();
   $page_numbers = array();
   if (isset($object['TOC']))
   {
+    $toc_found = 'true';
+
     $toc_entries = drupal_json_decode($object['TOC']->content);
 
     for ($i=0; $i < count($toc_entries['table_of_contents']); $i++) {
@@ -69,6 +72,7 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
         'pageProgression' => $variables['page_progression'],
         'pages' => $pages,
         'pageCount' => count($pages),
+        'tocFound' => $toc_found,
         'tocEntries' => $toc_entries,
         'pageNumbers' => $page_numbers,
       ),
