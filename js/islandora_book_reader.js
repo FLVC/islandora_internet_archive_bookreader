@@ -16,6 +16,7 @@ function IslandoraBookReader(settings) {
   this.imagesBaseURL = settings.imagesFolderUri;
   this.logoURL = '';
   this.mode = 2;
+  this.pageNums = settings.pageNumbers;
 }
 
 (function ($) {
@@ -33,7 +34,13 @@ function IslandoraBookReader(settings) {
    *   The index of the page.
    */
   IslandoraBookReader.prototype.getPageNum = function(index) {
-    return index + 1;
+    //return index + 1;
+    var pageNum = this.pageNums[index];
+    if (pageNum) {
+        return pageNum;
+    } else {
+        return 'n' + index;
+    }
   }
 
   /**
