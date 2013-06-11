@@ -39,6 +39,12 @@ div#BRnav {
   position: relative;
   margin-top: -40px;
 }
+div#BRpage {
+    float: right;
+    width: 295px;
+    padding-left:12px;
+    text-align: right;
+}
 div#BRfulltext .BRfloatMeta {
   overflow: scroll;
 }

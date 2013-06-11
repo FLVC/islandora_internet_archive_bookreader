@@ -34,6 +34,46 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
     );
   }
 
+  $toc_found = 'false';
+  $toc_entries = array();
+  $page_numbers = array();
+  if (isset($object['TOC']))
+  {
+    $toc_found = 'true';
+
+    $toc_entries = drupal_json_decode($object['TOC']->content);
+
+    for ($i=0; $i < count($toc_entries['table_of_contents']); $i++)
+    {
+        if (isset($toc_entries['table_of_contents'][$i]['type'])&&($toc_entries['table_of_contents'][$i]['type'] == 'page'))
+        {
+            // save page number in array
+            $sequence_number = intval($toc_entries['table_of_contents'][$i]['pagenum']);
+            if ($sequence_number > 0)
+            {
+                $page_numbers[$sequence_number - 1] = $toc_entries['table_of_contents'][$i]['title'];
+            }
+            // clear out pagenum to exclude from chapter markers
+            $toc_entries['table_of_contents'][$i]['pagenum'] = 'unknown';
+        }
+    }
+
+    for ($i=0; $i < count($toc_entries['table_of_contents']); $i++)
+    {
+        if (isset($toc_entries['table_of_contents'][$i]['type'])&&($toc_entries['table_of_contents'][$i]['type'] == 'chapter'))
+        {
+            $toc_entries['table_of_contents'][$i]['pagenum'] = $page_numbers[intval($toc_entries['table_of_contents'][$i]['pagenum']) - 1];
+        }
+    }
+
+  }
+  else
+  {
+    for ($i=0; $i < count($pages); $i++) {
+        $page_numbers[$i] = strval($i + 1);
+    }
+  }
+
   global $base_url;
   drupal_add_js(array(
       'islandoraInternetArchiveBookReader' => array(
@@ -49,6 +89,9 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
         'pageProgression' => $variables['page_progression'],
         'pages' => $pages,
         'pageCount' => count($pages),
+        'tocFound' => $toc_found,
+        'tocEntries' => $toc_entries,
+        'pageNumbers' => $page_numbers,
       ),
     ), 'setting');
   drupal_add_css("$library_path/BookReader/BookReader.css");
