@@ -16,7 +16,7 @@ function IslandoraBookReader(settings) {
   this.imagesBaseURL = settings.imagesFolderUri;
   this.logoURL = '';
   this.pageNums = settings.pageNumbers;
-  this.mode = settings.mode
+  this.mode = settings.mode;
   this.fullscreen = false;
 }
 
@@ -720,6 +720,7 @@ function IslandoraBookReader(settings) {
     // Updated with fix to recent bug found in the Archive Viewer that
     // prevents the last page from displaying the correct transcriptions
     // or hash links.
+/* commenting out bug fix for now
     var page_string = $('#pagenum').children('.currentpage').html();
     if (page_string != null) {
       var p_arr = page_string.split(" ");
@@ -737,6 +738,10 @@ function IslandoraBookReader(settings) {
       newHash = '#' + replaceAll(',','/',param_data.toString());
     }
     // End bug fix.
+*/
+
+    var newHash = '#' + this.fragmentFromParams(this.paramsFromCurrent());
+
     if (this.oldLocationHash != newHash) {
       window.location.hash = newHash;
     }
