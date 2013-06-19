@@ -661,8 +661,10 @@ function IslandoraBookReader(settings) {
     if (1 == this.mode) {
       // Recent fix to correct issue with 2 page books
       var hash_arr = this.oldLocationHash.split("/");
-      var index = hash_arr[1];
-      var pid = this.getPID(index-1);
+      //var index = hash_arr[1];
+      //var pid = this.getPID(index-1);
+      var index = this.getPageIndex(hash_arr[1].replace("+"," "));
+      var pid = this.getPID(index);
       $.get(this.getTextURI(pid),
             function(data) {
               jFullTextDiv.find('.BRfloatMeta').html(data);
@@ -720,7 +722,7 @@ function IslandoraBookReader(settings) {
     // Updated with fix to recent bug found in the Archive Viewer that
     // prevents the last page from displaying the correct transcriptions
     // or hash links.
-/* commenting out bug fix for now
+/* commenting out bug fix for now */
     var page_string = $('#pagenum').children('.currentpage').html();
     if (page_string != null) {
       var p_arr = page_string.split(" ");
@@ -731,14 +733,15 @@ function IslandoraBookReader(settings) {
       index = 1;
     }
 
-    var newHash = '#' + this.fragmentFromParams(this.paramsFromCurrent());
+    //var newHash = '#' + this.fragmentFromParams(this.paramsFromCurrent());
+    var currindex = this.currentIndex();
     if (page_string != this.currentIndex()) {
       var param_data = this.fragmentFromParams(this.paramsFromCurrent()).split("/");
       param_data[1] = index;
-      newHash = '#' + replaceAll(',','/',param_data.toString());
+      //newHash = '#' + replaceAll(',','/',param_data.toString());
     }
     // End bug fix.
-*/
+
 
     var newHash = '#' + this.fragmentFromParams(this.paramsFromCurrent());
 
