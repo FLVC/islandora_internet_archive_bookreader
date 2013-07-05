@@ -770,4 +770,148 @@ function IslandoraBookReader(settings) {
     BookReader.prototype.prepareFlipRightToLeft.call(this, nextL, nextR);
   }
 
+/* FLVC - Overriding following functions to remove leading "Page " from displays */
+
+IslandoraBookReader.prototype.getPageName = function(index) {
+    return this.getPageNum(index);
+}
+
+IslandoraBookReader.prototype.addSearchResult = function(queryString, pageIndex) {
+    var pageNumber = this.getPageNum(pageIndex);
+    var uiStringSearch = "Search result"; // i18n
+    var uiStringPage = "Page"; // i18n
+    
+    var percentThrough = BookReader.util.cssPercentage(pageIndex, this.numLeafs - 1);
+    var pageDisplayString = '';
+    if (pageNumber) {
+        pageDisplayString = pageNumber;
+    }
+    
+    var re = new RegExp('{{{(.+?)}}}', 'g');    
+    queryString = queryString.replace(re, '<a href="#" onclick="br.jumpToIndex('+pageIndex+'); return false;">$1</a>')
+
+    var marker = $('<div class="search" style="top:'+(-$('#BRcontainer').height())+'px; left:' + percentThrough + ';" title="' + uiStringSearch + '"><div class="query">'
+        + queryString + '<span>' + pageNumber + '</span></div>')
+    .data({'self': this, 'pageIndex': pageIndex })
+    .appendTo('#BRnavline').bt({
+        contentSelector: '$(this).find(".query")',
+        trigger: 'hover',
+        closeWhenOthersOpen: true,
+        cssStyles: {
+            padding: '12px 14px',
+            backgroundColor: '#fff',
+            border: '4px solid #e2dcc5',
+            fontFamily: '"Lucida Grande","Arial",sans-serif',
+            fontSize: '13px',
+            //lineHeight: '18px',
+            color: '#615132'
+        },
+        shrinkToFit: false,
+        width: '230px',
+        padding: 0,
+        spikeGirth: 0,
+        spikeLength: 0,
+        overlap: '22px',
+        overlay: false,
+        killTitle: false, 
+        textzIndex: 9999,
+        boxzIndex: 9998,
+        wrapperzIndex: 9997,
+        offsetParent: null,
+        positions: ['top'],
+        fill: 'white',
+        windowMargin: 10,
+        strokeWidth: 0,
+        cornerRadius: 0,
+        centerPointX: 0,
+        centerPointY: 0,
+        shadow: false
+    })
+    .hover( function() {
+                // remove from other markers then turn on just for this
+                // XXX should be done when nav slider moves
+                $('.search,.chapter').removeClass('front');
+                $(this).addClass('front');
+            }, function() {
+                $(this).removeClass('front');
+            }
+    )
+    .bind('click', function() {
+        $(this).data('self').jumpToIndex($(this).data('pageIndex'));
+    });
+    
+    $(marker).animate({top:'-25px'}, 'slow');
+
+}
+
+IslandoraBookReader.prototype.addChapter = function(chapterTitle, pageNumber, pageIndex) {
+    var uiStringPage = 'Page'; // i18n
+
+    var percentThrough = BookReader.util.cssPercentage(pageIndex, this.numLeafs - 1);
+    
+    $('<div class="chapter" style="left:' + percentThrough + ';"><div class="title">'
+        + chapterTitle + '<span>|</span> ' + pageNumber + '</div></div>')
+    .appendTo('#BRnavline')
+    .data({'self': this, 'pageIndex': pageIndex })
+    .bt({
+        contentSelector: '$(this).find(".title")',
+        trigger: 'hover',
+        closeWhenOthersOpen: true,
+        cssStyles: {
+            padding: '12px 14px',
+            backgroundColor: '#000',
+            border: '4px solid #e2dcc5',
+            //borderBottom: 'none',
+            fontFamily: '"Arial", sans-serif',
+            fontSize: '12px',
+            fontWeight: '700',
+            color: '#fff',
+            whiteSpace: 'nowrap'
+        },
+        shrinkToFit: true,
+        width: '200px',
+        padding: 0,
+        spikeGirth: 0,
+        spikeLength: 0,
+        overlap: '21px',
+        overlay: false,
+        killTitle: true, 
+        textzIndex: 9999,
+        boxzIndex: 9998,
+        wrapperzIndex: 9997,
+        offsetParent: null,
+        positions: ['top'],
+        fill: 'black',
+        windowMargin: 10,
+        strokeWidth: 0,
+        cornerRadius: 0,
+        centerPointX: 0,
+        centerPointY: 0,
+        shadow: false
+    })
+    .hover( function() {
+            // remove hover effect from other markers then turn on just for this
+            $('.search,.chapter').removeClass('front');
+                $(this).addClass('front');
+            }, function() {
+                $(this).removeClass('front');
+            }
+    )
+    .bind('click', function() {
+        $(this).data('self').jumpToIndex($(this).data('pageIndex'));
+    });
+}
+
+IslandoraBookReader.prototype.updateNavPageNum = function(index) {
+    var pageNum = this.getPageNum(index);
+    var pageStr;
+    if (pageNum[0] == 'n') { // funny index
+        pageStr = index + 1 + ' / ' + this.numLeafs; // Accessible index starts at 0 (alas) so we add 1 to make human
+    } else {
+        pageStr = pageNum;
+    }
+    
+    $('#pagenum .currentpage').text(pageStr);
+}
+
 })(jQuery);
