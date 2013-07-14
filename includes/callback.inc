@@ -71,7 +71,7 @@ function islandora_internet_archive_bookreader_search_callback($object_id, $term
     ))),
     'hl.tag.pre' => '{{{',
     'hl.tag.post' => '}}}',
-    'defType' => 'dismax',
+    'defType' => 'edismax',
   ));
   $results = islandora_internet_archive_bookreader_remap_highlighting_for_bookreader_results($results);
   drupal_json_output($results);
