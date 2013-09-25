@@ -18,6 +18,7 @@ function IslandoraBookReader(settings) {
   this.pageNums = settings.pageNumbers;
   this.mode = settings.mode;
   this.fullscreen = false;
+  this.pageProgression = settings.pageProgression;
 }
 
 (function ($) {
@@ -246,7 +247,31 @@ function IslandoraBookReader(settings) {
    * displayed on.
    */
   IslandoraBookReader.prototype.getPageSide = function(index) {
-    return this.settings.pageProgression.toUpperCase()[index & 0x1];
+    if ((parseInt(this.settings.pages[0].height) / parseInt(this.settings.pages[0].width)) > 2.5 ) {
+        // first page is narrow, probably spine
+        return this.settings.pageProgression.toUpperCase()[index & 0x1];
+    }
+
+    // first page is normal width, probably book cover
+
+    if ('rl' != this.pageProgression) {
+      // If pageProgression is not set RTL we assume it is LTR
+      if (0 == (index & 0x1)) {
+        // Even-numbered page
+        return 'R';
+      } else {
+        // Odd-numbered page
+        return 'L';
+      }
+    } else {
+      // RTL
+      if (0 == (index & 0x1)) {
+        return 'L';
+      } else {
+        return 'R';
+      }
+    }
+
   }
 
   /**
