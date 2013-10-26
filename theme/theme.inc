@@ -10,7 +10,9 @@
  */
 function islandora_internet_archive_bookreader_preprocess_islandora_internet_archive_bookreader(array &$variables) {
   module_load_include('inc', 'islandora_internet_archive_bookreader', 'includes/utilities');
+  module_load_include('inc', 'islandora', 'includes/utilities');
   $object = $variables['object'];
+  $variables['parent_collections'] = islandora_get_parents_from_rels_ext($object);
   $dsid = $variables['datastream_id'];
   $library_path = libraries_get_path('bookreader');
   $module_path = drupal_get_path('module', 'islandora_internet_archive_bookreader');
