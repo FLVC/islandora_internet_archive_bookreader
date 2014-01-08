@@ -19,6 +19,10 @@
         if (bookReader.settings.tocFound == 'true') {
             bookReader.updateTOC(bookReader.settings.tocEntries['table_of_contents']);
         }
+
+        if ($.browser.mobile && settings.islandoraInternetArchiveBookReader.mobilize) {
+          bookReader.goFullScreen();
+        }
       });
     }
   };
