@@ -960,4 +960,14 @@ IslandoraBookReader.prototype.updateNavPageNum = function(index) {
     $('#pagenum .currentpage').text(pageStr);
 }
 
+/*
+* Update the table of contents based on array of TOC entries.
+*/
+IslandoraBookReader.prototype.updateTOC = function(tocEntries) {
+    this.removeChapters();
+    for (var i = tocEntries.length - 1; i >= 0; i--) {
+        this.addChapterFromEntry(tocEntries[i]);
+    }
+}
+
 })(jQuery);
