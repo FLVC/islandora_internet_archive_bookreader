@@ -580,8 +580,16 @@ function IslandoraBookReader(settings) {
         'height': '100%'
       });
       //this little hack re-centers the pages
-      this.zoom(1);
+      //this.zoom(1);
       //this.zoom(2);
+      if (1 == this.mode) {
+          this.prepareOnePageView();
+      } else if (3 == this.mode) {
+          this.prepareThumbnailView();
+      } else {
+          this.prepareTwoPageView();
+          this.twoPageCenterView(0.5, 0.5);
+      }
 
     }
     else {
@@ -603,7 +611,16 @@ function IslandoraBookReader(settings) {
         'height': '680px'
       });
       //this.zoom(1);
-      this.zoom(2);
+      //this.zoom(2);
+      if (1 == this.mode) {
+          this.prepareOnePageView();
+      } else if (3 == this.mode) {
+          this.prepareThumbnailView();
+      } else {
+          this.prepareTwoPageView();
+          this.twoPageCenterView(0.5, 0.5);
+      }
+
     }
   }
 
@@ -637,8 +654,16 @@ function IslandoraBookReader(settings) {
           'height': '100%'
         });
         //this little hack re-centers the pages
-        this.zoom(1);
+        //this.zoom(1);
         //this.zoom(2);
+        if (1 == this.mode) {
+            this.prepareOnePageView();
+        } else if (3 == this.mode) {
+            this.prepareThumbnailView();
+        } else {
+            this.prepareTwoPageView();
+            this.twoPageCenterView(0.5, 0.5);
+        }
 
   }
   /**
