@@ -99,8 +99,6 @@ div.BRprogresspopup {
   float: left;
   width: 50%;
 }
-<<<<<<< HEAD
-=======
 
 /*
  * Colorbox (used for displaying textarea with page OCR)
@@ -120,4 +118,3 @@ div.BRprogresspopup {
 #cboxContent {
   height: 643px !important; /* Set height of textarea to display correctly */
 }
->>>>>>> upstream/7.x

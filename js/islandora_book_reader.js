@@ -555,6 +555,7 @@ function IslandoraBookReader(settings) {
   IslandoraBookReader.prototype.toggleFullScreen = function() {
     this.fullscreen = (this.fullscreen ? false : true);
     if(this.fullscreen) {
+/*
       $('div#book-viewer').css({
         'position': 'fixed',
         'width': '100%',
@@ -566,17 +567,39 @@ function IslandoraBookReader(settings) {
       $('div#BookReader, div#BRcontainer').css({
         'height': '100%'
       });
+*/
+      $('div#BookReader').css({
+        'position': 'fixed',
+        'width': '100%',
+        'height': '100%',
+        'left': '0',
+        'top': '0',
+        'z-index': '700'
+      });
+      $('div#BRcontainer').css({
+        'height': '100%'
+      });
       //this little hack re-centers the pages
       this.zoom(1);
       this.zoom(2);
 
     }
     else {
+/*
       $('div#book-viewer').css({
       'position': 'relative',
       'z-index': '0'
       });
       $('div#BookReader, div#BRcontainer').css({
+        'height': '680px'
+      });
+*/
+      $('div#BookReader').css({
+        'position': 'static',
+        'height': '680px',
+        'z-index': '0'
+      });
+      $('div#BRcontainer').css({
         'height': '680px'
       });
       this.zoom(1);
@@ -589,6 +612,7 @@ function IslandoraBookReader(settings) {
    */
    IslandoraBookReader.prototype.goFullScreen = function() {
     this.fullscreen = true;
+/*
         $('div#book-viewer').css({
             'position': 'fixed',
             'width': '100%',
@@ -599,6 +623,18 @@ function IslandoraBookReader(settings) {
         });
         $('div#BookReader, div#BRcontainer').css({
             'height': '100%'
+        });
+*/
+        $('div#BookReader').css({
+          'position': 'fixed',
+          'width': '100%',
+          'height': '100%',
+          'left': '0',
+          'top': '0',
+          'z-index': '700'
+        });
+        $('div#BRcontainer').css({
+          'height': '100%'
         });
         //this little hack re-centers the pages
         this.zoom(1);
