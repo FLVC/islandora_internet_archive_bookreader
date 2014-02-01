@@ -580,8 +580,9 @@ function IslandoraBookReader(settings) {
         'height': '100%'
       });
       //this little hack re-centers the pages
+      //this.zoom(1);
+      this.zoom(2);
       this.zoom(1);
-      //this.zoom(2);
 
     }
     else {
@@ -604,6 +605,7 @@ function IslandoraBookReader(settings) {
       });
       //this.zoom(1);
       this.zoom(2);
+      this.zoom(1);
     }
   }
 
@@ -637,8 +639,9 @@ function IslandoraBookReader(settings) {
           'height': '100%'
         });
         //this little hack re-centers the pages
+        //this.zoom(1);
+        this.zoom(2);
         this.zoom(1);
-        //this.zoom(2);
 
   }
   /**
