@@ -398,7 +398,7 @@ function IslandoraBookReader(settings) {
     // the toolbar and nav bar easier
     // Setup tooltips -- later we could load these from a file for i18n
     var titles = {
-      '.logo': Drupal.t('Go to Archive.org'), // $$$ update after getting OL record
+      '.logo': Drupal.t('Go to first page'), // $$$ update after getting OL record
       '.zoom_in': Drupal.t('Zoom in'),
       '.zoom_out': Drupal.t('Zoom out'),
       '.onepg': Drupal.t('One-page view'),
@@ -524,6 +524,7 @@ function IslandoraBookReader(settings) {
       $('#colorbox').draggable({
         cancel: '.BRfloat > :not(.BRfloatHead)'
       });
+      self.updateShareDiv($('#BRshare'));
     }});
     jToolbar.find('.info').colorbox({inline: true, opacity: overlayOpacity, href: "#BRinfo", onLoad: function() {
       self.autoStop(); self.ttsStop();
@@ -723,7 +724,7 @@ function IslandoraBookReader(settings) {
     var self = this;
     var jForm = $([
         '<p>' + Drupal.t('Copy and paste one of these options to share this book elsewhere.') + '</p>',
-        '<form method="post" action="">',
+        '<form name="shareform" method="post" action="">',
             '<fieldset>',
                 '<label for="pageview">' + Drupal.t('Link to this page view:') + '</label>',
                 '<input type="text" name="pageview" id="pageview" value="' + pageView + '"/>',
@@ -758,6 +759,17 @@ function IslandoraBookReader(settings) {
     });
     jForm.appendTo(jShareDiv);
     jForm = ''; // closure
+  }
+
+  /**
+   * Updates content in the "Share" module dialog box.
+   */
+  IslandoraBookReader.prototype.updateShareDiv = function(jShareDiv) {
+    var origView = document.location + '';
+    var bookView = (origView + '').replace(/#.*/,'');
+    var pageView = bookView + '#page/n' + this.currentIndex() + '/mode/' + this.mode + 'up';
+    document.forms['shareform'].elements['pageview'].value = pageView;
+    document.forms['shareform'].elements['booklink'].value = bookView;
   }
 
   /**
