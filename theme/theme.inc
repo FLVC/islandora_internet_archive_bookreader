@@ -82,7 +82,7 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
     'islandoraInternetArchiveBookReader' => array(
       'book' => $object->id,
       'info' => theme('islandora_internet_archive_bookreader_book_info', array('object' => $object)),
-      'label' => $object->label,
+      'label' => html_entity_decode($object->label,ENT_QUOTES,'UTF-8'),
       'searchUri' => $search_uri,
       'textUri' => url('internet_archive_bookreader_text/PID', array('absolute' => TRUE)),
       'dimensionsUri' => url('internet_archive_bookreader_dimensions/PID', array('absolute' => TRUE)),
