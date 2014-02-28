@@ -53,7 +53,7 @@ function islandora_internet_archive_bookreader_preprocess_islandora_internet_arc
             $sequence_number = intval($toc_entries['table_of_contents'][$i]['pagenum']);
             if ($sequence_number > 0)
             {
-                $page_numbers[$sequence_number - 1] = $toc_entries['table_of_contents'][$i]['title'];
+                $page_numbers[$sequence_number - 1] = html_entity_decode($toc_entries['table_of_contents'][$i]['title'],ENT_QUOTES,'UTF-8');
             }
             // clear out pagenum to exclude from chapter markers
             $toc_entries['table_of_contents'][$i]['pagenum'] = 'unknown';
