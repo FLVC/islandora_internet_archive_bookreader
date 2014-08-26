@@ -17,6 +17,7 @@
     this.bookUrl = document.location.toString();
     this.imagesBaseURL = settings.imagesFolderUri;
     this.logoURL = '';
+    this.pageNums = settings.pageNumbers;
     this.mode = settings.mode
     this.fullscreen = false;
     this.pageProgression = settings.pageProgression;
