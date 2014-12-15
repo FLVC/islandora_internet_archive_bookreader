@@ -1,6 +1,10 @@
 /**
  * Undo the global css settings from BookReader.css.
  */
+body {
+  font-size: 100%;
+  font: inherit;
+}
 div#BookReader {
   position: static;
   overflow: visible;
