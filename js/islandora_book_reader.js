@@ -20,6 +20,7 @@
     this.mode = settings.mode
     this.fullscreen = false;
     this.content_type = settings.content_type;
+    this.pageProgression = settings.pageProgression;
   }
 
   // Inherit from Internet Archive BookReader class.
@@ -108,7 +109,7 @@
             dimensions.width = parseInt(data.width);
             dimensions.height = parseInt(data.height);
           },
-          async: false,
+          async: false
         });
       }
       else {
@@ -186,7 +187,7 @@
       'svc_val_fmt': 'info:ofi/fmt:kev:mtx:jpeg2000',
       'svc.format': 'image/jpeg',
       'svc.level': this.settings.compression,
-      'svc.rotate': 0,
+      'svc.rotate': 0
     });
     return (base_uri + 'resolver?' + params);
   };
@@ -218,8 +219,26 @@
    */
   IslandoraBookReader.prototype.getPageURI = function(index, reduce, rotate) {
     if (typeof this.settings.pages[index] != 'undefined') {
-      var resource_uri = this.settings.pages[index].uri;
-      return this.getDjatokaUri(resource_uri);
+      // Using backups? Get the image URI via callback and determine whether to
+      // Djatoka-ize it.
+      if (this.settings.useBackupUri == true) {
+        var callback_uri = null;
+        $.ajax({
+          url: this.settings.tokenUri.replace('PID', this.settings.pages[index].pid),
+          async: false,
+          success: function(data, textStatus, jqXHR) {
+            callback_uri = data;
+          }
+        });
+        if (callback_uri.indexOf("datastream/JP2/view") != -1) {
+          return this.getDjatokaUri(callback_uri);
+        }
+        return callback_uri;
+      }
+      // Not using backups? Just Djatoka-ize the page's image URI.
+      else {
+        return this.getDjatokaUri(this.settings.pages[index].uri);
+      }
     }
   }
 
@@ -240,9 +259,30 @@
   /**
    * Return which side, left or right, that a given page should be
    * displayed on.
+   *
+   * @see BookReader/BookReaderIA/BookReaderJSIA.php
    */
   IslandoraBookReader.prototype.getPageSide = function(index) {
-    return this.settings.pageProgression.toUpperCase()[index & 0x1];
+    if ('rl' != this.pageProgression) {
+      // If pageProgression is not set RTL we assume it is LTR
+      if (0 == (index & 0x1)) {
+        // Even-numbered page
+        return 'R';
+      }
+      else {
+        // Odd-numbered page
+        return 'L';
+      }
+    }
+    else {
+      // RTL
+      if (0 == (index & 0x1)) {
+        return 'L';
+      }
+      else {
+        return 'R';
+      }
+    }
   }
 
   /**
@@ -526,26 +566,75 @@
   }
 
   /**
+   * Window resize event callback, handles admin menu
+   * in Drupal.
+   */
+  IslandoraBookReader.prototype.windowResize = function() {
+    if (this.fullscreen && $("#admin-menu").length) {
+      var top = 0;
+      var height = '100%';
+      var admin_bar_height = $("#admin-menu").height();
+      top = admin_bar_height + "px";
+      height = ($(window).height() - admin_bar_height) + "px";
+      this.resetReaderSizeAndStyle(height, top);
+    }
+  }
+
+  /**
+   * Adjust the book viewer required styles in fullscreen.
+   */
+  IslandoraBookReader.prototype.resetReaderSizeAndStyle = function(height, top) {
+    $('div#book-viewer').css({
+      'position': 'fixed',
+      'width': '100%',
+      'height': height,
+      'left': '0',
+      'top': top,
+      'z-index': '700'
+    });
+    this.realignPages();
+  }
+
+  /**
+   * Realign the readers contents, dependant on its current state
+   * (ex: fullscreen).
+   */
+  IslandoraBookReader.prototype.realignPages = function() {
+    $('div#BookReader').css({
+      'height': '100%'
+    });
+    var br_top = '0';
+    if (this.fullscreen) {
+      br_top = $('div#BRtoolbar').height() + 5;
+    }
+    br_top += 'px';
+    $('div#BRcontainer').css({
+      'height':'100%',
+      'top':br_top
+    });
+    //this little hack re-centers the pages
+    this.zoom(1);
+    this.zoom(2);
+  }
+
+  /**
    * Toggle fullscreen viewer.
    */
   IslandoraBookReader.prototype.toggleFullScreen = function() {
     this.fullscreen = (this.fullscreen ? false : true);
     if(this.fullscreen) {
-      $('div#book-viewer').css({
-        'position': 'fixed',
-        'width': '100%',
-        'height': '100%',
-        'left': '0',
-        'top': '0',
-        'z-index': '700'
-      });
-      $('div#BookReader, div#BRcontainer').css({
+      var top = 0;
+      var height = '100%';
+      // Account for the admin menu.
+      if ($("#admin-menu").length) {
+        var admin_bar_height = $("#admin-menu").height();
+        top = admin_bar_height + "px";
+        height = ($(window).height() - admin_bar_height) + "px";
+      }
+      this.resetReaderSizeAndStyle(height, top);
+      $('div#BookReader').css({
         'height': '100%'
       });
-      //this little hack re-centers the pages
-      this.zoom(1);
-      this.zoom(2);
-
     }
     else {
       $('div#book-viewer').css({
@@ -555,6 +644,9 @@
       $('div#BookReader, div#BRcontainer').css({
         'height': '680px'
       });
+      $('div#BRcontainer').css({
+        'top': '0px'
+      });
       this.zoom(1);
       this.zoom(2);
     }
@@ -563,24 +655,24 @@
   /**
    * Go Fullscreen regardless of current state.
    */
-   IslandoraBookReader.prototype.goFullScreen = function() {
+  IslandoraBookReader.prototype.goFullScreen = function() {
     this.fullscreen = true;
-        $('div#book-viewer').css({
-            'position': 'fixed',
-            'width': '100%',
-            'height': '100%',
-            'left': '0',
-            'top': '0',
-            'z-index': '700'
-        });
-        $('div#BookReader, div#BRcontainer').css({
-            'height': '100%'
-        });
-        //this little hack re-centers the pages
-        this.zoom(1);
-        this.zoom(2);
-
+    $('div#book-viewer').css({
+      'position': 'fixed',
+      'width': '100%',
+      'height': '100%',
+      'left': '0',
+      'top': top,
+      'z-index': '700'
+    });
+    $('div#BookReader, div#BRcontainer').css({
+      'height': '100%'
+    });
+    //this little hack re-centers the pages
+    this.zoom(1);
+    this.zoom(2);
   }
+
   /**
    * The default look of the "Info" modal dialog box.
    */
@@ -737,16 +829,18 @@
 
   /**
    * Update the location hash only change it when it actually changes, as some
-   * browsers can't handle that shit.
+   * browsers can't handle that stuff.
    */
   IslandoraBookReader.prototype.updateLocationHash = function() {
     // Updated with fix to recent bug found in the Archive Viewer that
     // prevents the last page from displaying the correct transcriptions
     // or hash links.
-    var page_string = $('#pagenum').children('.currentpage').html();
-    if (page_string != null) {
+
+    // Get the current page, from elements text.
+    var page_string = $('#pagenum .currentpage').text();
+    if (page_string) {
       var p_arr = page_string.split(" ");
-      var p_index = p_arr[1]
+      var p_index = p_arr[1];
       index = p_index;
     }
     else {
@@ -754,15 +848,17 @@
     }
 
     var newHash = '#' + this.fragmentFromParams(this.paramsFromCurrent());
-    if (page_string != this.currentIndex()) {
+    if (page_string != this.currentIndex() && page_string) {
       var param_data = this.fragmentFromParams(this.paramsFromCurrent()).split("/");
       param_data[1] = index;
       newHash = '#' + replaceAll(',','/',param_data.toString());
     }
+
     // End bug fix.
     if (this.oldLocationHash != newHash) {
       window.location.hash = newHash;
     }
+
     // This is the variable checked in the timer.  Only user-generated changes
     // to the URL will trigger the event.
     this.oldLocationHash = newHash;
@@ -785,4 +881,53 @@
     BookReader.prototype.prepareFlipRightToLeft.call(this, nextL, nextR);
   }
 
+  /**
+   * Override the autoToggle function to reset back to the zero index.
+   *
+   * Overridden because IAV sets the index back to 1 when it should be 0.
+   */
+  IslandoraBookReader.prototype.autoToggle = function() {
+    this.ttsStop();
+
+    var bComingFrom1up = false;
+    if (2 != this.mode) {
+      bComingFrom1up = true;
+      this.switchMode(2);
+    }
+
+    // Change to autofit if book is too large
+    if (this.reduce < this.twoPageGetAutofitReduce()) {
+      this.zoom2up('auto');
+    }
+
+    var self = this;
+    if (null == this.autoTimer) {
+      this.flipSpeed = 2000;
+
+      // $$$ Draw events currently cause layout problems when they occur during animation.
+      //     There is a specific problem when changing from 1-up immediately to autoplay in RTL so
+      //     we workaround for now by not triggering immediate animation in that case.
+      //     See https://bugs.launchpad.net/gnubook/+bug/328327
+      if (('rl' == this.pageProgression) && bComingFrom1up) {
+          // don't flip immediately -- wait until timer fires
+      } else {
+          // flip immediately
+          this.flipFwdToIndex();
+      }
+
+      $('#BRtoolbar .play').hide();
+      $('#BRtoolbar .pause').show();
+      this.autoTimer=setInterval(function(){
+        if (self.animating) {return;}
+
+          if (Math.max(self.twoPage.currentIndexL, self.twoPage.currentIndexR) >= self.lastDisplayableIndex()) {
+            self.flipBackToIndex(0); // $$$ really what we want?
+          } else {
+            self.flipFwdToIndex();
+          }
+      },5000);
+    } else {
+        this.autoStop();
+    }
+  }
 })(jQuery);
