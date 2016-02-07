@@ -20,7 +20,6 @@
     this.pageNums = settings.pageNumbers;
     this.mode = settings.mode
     this.fullscreen = false;
-    this.pageProgression = settings.pageProgression;
     this.content_type = settings.content_type;
     this.pageProgression = settings.pageProgression;
   }
@@ -638,6 +637,7 @@
   IslandoraBookReader.prototype.toggleFullScreen = function() {
     this.fullscreen = (this.fullscreen ? false : true);
     if(this.fullscreen) {
+/*
       var top = 0;
       var height = '100%';
       // Account for the admin menu.
@@ -650,8 +650,21 @@
       $('div#BookReader').css({
         'height': '100%'
       });
+*/
+      $('div#BookReader').css({
+        'position': 'fixed',
+        'width': '100%',
+        'height': '100%',
+        'left': '0',
+        'top': '0',
+        'z-index': '700'
+      });
+      $('div#BRcontainer').css({
+        'height': '100%'
+      });
     }
     else {
+/*
       $('div#book-viewer').css({
       'position': 'relative',
       'z-index': '0'
@@ -664,6 +677,25 @@
       });
       this.zoom(1);
       this.zoom(2);
+*/
+      $('div#BookReader').css({
+        'position': 'static',
+        'height': '680px',
+        'z-index': '0'
+      });
+      $('div#BRcontainer').css({
+        'height': '680px'
+      });
+    }
+
+    //this re-centers the pages
+    if (1 == this.mode) {
+        this.prepareOnePageView();
+    } else if (3 == this.mode) {
+        this.prepareThumbnailView();
+    } else {
+        this.prepareTwoPageView();
+        this.twoPageCenterView(0.5, 0.5);
     }
   }
 
@@ -672,6 +704,7 @@
    */
   IslandoraBookReader.prototype.goFullScreen = function() {
     this.fullscreen = true;
+/*
     $('div#book-viewer').css({
       'position': 'fixed',
       'width': '100%',
@@ -683,9 +716,29 @@
     $('div#BookReader, div#BRcontainer').css({
       'height': '100%'
     });
+*/
+    $('div#BookReader').css({
+      'position': 'fixed',
+      'width': '100%',
+      'height': '100%',
+      'left': '0',
+      'top': '0',
+      'z-index': '700'
+    });
+    $('div#BRcontainer').css({
+      'height': '100%'
+    });
     //this little hack re-centers the pages
-    this.zoom(1);
-    this.zoom(2);
+    //this.zoom(1);
+    //this.zoom(2);
+    if (1 == this.mode) {
+        this.prepareOnePageView();
+    } else if (3 == this.mode) {
+        this.prepareThumbnailView();
+    } else {
+        this.prepareTwoPageView();
+        this.twoPageCenterView(0.5, 0.5);
+    }
   }
 
   /**
